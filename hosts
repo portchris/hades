@@ -1,7 +1,6 @@
-127.0.0.1 	localhost
-127.0.0.1 	hades.portchris.net
-127.0.0.1 	*.hades.portchris.net
-192.168.0.2    	node01
+127.0.0.1 localhost
+127.0.0.1 hades.portchris.net
+127.0.0.1 *.hades.portchris.net
 
 # The following lines are desirable for IPv6 capable hosts
 ::1 ip6-localhost ip6-loopback
