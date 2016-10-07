@@ -51,4 +51,8 @@ fake-hwclock.data
 \#*\#
 DEADJOE
 
+# Custom ignores
+.bzrignore
+.bzr/*
+
 # end section managed by etckeeper
