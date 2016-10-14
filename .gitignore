@@ -23,7 +23,6 @@ mtab.fuselock
 network/run
 adjtime
 lvm/cache
-lvm/backup
 lvm/archive
 X11/xdm/authdir/authfiles/*
 ntp.conf.dhcp
@@ -43,6 +42,7 @@ openvpn/openvpn-status.log
 cups/subscriptions.conf
 cups/subscriptions.conf.O
 fake-hwclock.data
+check_mk/logwatch.state
 
 # editor temp files
 *~
@@ -50,9 +50,5 @@ fake-hwclock.data
 .sw?
 \#*\#
 DEADJOE
-
-# Custom ignores
-.bzrignore
-.bzr/*
 
 # end section managed by etckeeper

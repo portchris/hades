@@ -24,7 +24,7 @@
 #
 ### BEGIN INIT INFO
 # Provides: apparmor
-# Required-Start: $remote_fs
+# Required-Start: $local_fs
 # Required-Stop: umountfs
 # Default-Start: S
 # Default-Stop:
@@ -66,6 +66,52 @@ securityfs() {
 	fi
 }
 
+handle_system_policy_package_updates() {
+	apparmor_was_updated=0
+
+	if ! compare_previous_version ; then
+		# On snappy flavors, if the current and previous versions are
+		# different then clear the system cache. snappy will handle
+		# "$PROFILES_CACHE_VAR" itself (on Touch flavors
+		# compare_previous_version always returns '0' since snappy
+		# isn't available).
+		clear_cache_system
+		apparmor_was_updated=1
+	elif ! compare_and_save_debsums apparmor ; then
+		# If the system policy has been updated since the last time we
+		# ran, clear the cache to prevent potentially stale binary
+		# cache files after an Ubuntu image based upgrade (LP:
+		# #1350673). This can be removed once all system image flavors
+		# move to snappy (on snappy systems compare_and_save_debsums
+		# always returns '0' since /var/lib/dpkg doesn't exist).
+		clear_cache
+		apparmor_was_updated=1
+	fi
+
+	if [ -x /usr/bin/aa-clickhook ] || [ -x /usr/bin/aa-profile-hook ] ; then
+		# If packages for system policy that affect click packages have
+		# been updated since the last time we ran, run aa-clickhook -f
+                force_clickhook=0
+                force_profile_hook=0
+                if ! compare_and_save_debsums apparmor-easyprof-ubuntu ; then
+                        force_clickhook=1
+                fi
+                if ! compare_and_save_debsums apparmor-easyprof-ubuntu-snappy ; then
+                        force_clickhook=1
+                fi
+                if ! compare_and_save_debsums click-apparmor ; then
+                        force_clickhook=1
+                        force_profile_hook=1
+                fi
+                if [ -x /usr/bin/aa-clickhook ] && ([ $force_clickhook -eq 1 ] || [ $apparmor_was_updated -eq 1 ]) ; then
+                        aa-clickhook -f
+                fi
+                if [ -x /usr/bin/aa-profile-hook ] && ([ $force_profile_hook -eq 1 ] || [ $apparmor_was_updated -eq 1 ]) ; then
+                        aa-profile-hook -f
+                fi
+	fi
+}
+
 # Allow "recache" even when running on the liveCD
 if [ "$1" = "recache" ]; then
 	log_daemon_msg "Recaching AppArmor profiles"
@@ -81,13 +127,14 @@ test -d /rofs/etc/apparmor.d && exit 0
 rc=255
 case "$1" in
 	start)
-		if [ -x /bin/running-in-container ] && /bin/running-in-container; then
+		if systemd-detect-virt --quiet --container; then
 			log_daemon_msg "Not starting AppArmor in container"
 			log_end_msg 0
 			exit 0
 		fi
 		log_daemon_msg "Starting AppArmor profiles"
 		securityfs
+		handle_system_policy_package_updates
 		load_configured_profiles
 		rc=$?
 		log_end_msg "$rc"
@@ -108,7 +155,7 @@ with the 'teardown' option."
 EOM
 		;;
 	teardown)
-		if [ -x /bin/running-in-container ] && /bin/running-in-container; then
+		if systemd-detect-virt --quiet --container; then
 			log_daemon_msg "Not tearing down AppArmor in container"
 			log_end_msg 0
 			exit 0
@@ -125,7 +172,7 @@ EOM
 		log_end_msg $rc
 		;;
 	restart|reload|force-reload)
-		if [ -x /bin/running-in-container ] && /bin/running-in-container; then
+		if systemd-detect-virt --quiet --container; then
 			log_daemon_msg "Not reloading AppArmor in container"
 			log_end_msg 0
 			exit 0
@@ -135,17 +182,7 @@ EOM
 		clear_cache
 		load_configured_profiles
 		rc=$?
-
-		# Now, we have to find profiles that were removed.  Currently
-		# we must re-parse all the profiles to get policy names.  :(
-		aa_configured=$(mktemp -t aa-XXXXXX)
-		configured_profile_names > "$aa_configured" || exit 1
-		aa_loaded=$(mktemp -t aa-XXXXXX)
-		running_profile_names > "$aa_loaded" || exit 1
-		LC_COLLATE=C comm -2 -3 "$aa_loaded" "$aa_configured" | while read profile ; do
-			unload_profile "$profile"
-	        done
-		rm -f "$aa_configured" "$aa_loaded"
+		unload_obsolete_profiles
 
 		log_end_msg "$rc"
 		;;

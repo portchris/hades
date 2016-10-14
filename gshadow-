@@ -21,7 +21,7 @@ tape:*::
 sudo:*::portchris
 audio:*::
 dip:*::portchris
-www-data:*::
+www-data:*::portchris
 backup:*::
 operator:*::
 list:*::
@@ -37,7 +37,6 @@ staff:*::
 games:*::
 users:*::
 nogroup:*::
-libuuid:!::
 netdev:!::
 crontab:!::
 syslog:!::
@@ -50,3 +49,9 @@ admin:!::
 portchris:!::
 ssl-cert:!::
 mysql:!::
+systemd-journal:!::
+systemd-timesync:!::
+systemd-network:!::
+systemd-resolve:!::
+systemd-bus-proxy:!::
+uuidd:!::

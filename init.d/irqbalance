@@ -41,6 +41,12 @@ fi
 
 case "$1" in
     start)
+        if [ -x /usr/bin/systemd-detect-virt ] && /usr/bin/systemd-detect-virt --quiet --container; then
+            log_daemon_msg "Not starting $NAME in container"
+            log_end_msg 0
+            exit 0
+        fi
+
         log_begin_msg "Starting $DESC: $NAME"
 
         pid=$( pidofproc -p $PIDFILE $DAEMON )
@@ -63,6 +69,12 @@ case "$1" in
         log_end_msg $?
         ;;
     restart|force-reload)
+        if [ -x /usr/bin/systemd-detect-virt ] && /usr/bin/systemd-detect-virt --quiet --container; then
+            log_daemon_msg "Not restarting $NAME in container"
+            log_end_msg 0
+            exit 0
+        fi
+
         log_begin_msg "Restarting $DESC: $NAME"
 
         start-stop-daemon --stop --retry 5 --quiet --oknodo --exec $DAEMON
@@ -71,6 +83,9 @@ case "$1" in
         start-stop-daemon --start --quiet --oknodo --exec $DAEMON -- --pid=$PIDFILE $OPTIONS $DOPTIONS
 
         log_end_msg $?
+        ;;
+    status)
+        status_of_proc $DAEMON $NAME
         ;;
     *)
         N=/etc/init.d/$SNAME

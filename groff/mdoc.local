@@ -1,3 +1,5 @@
+.\" -*- nroff -*-
+.\"
 .\" This file is loaded after doc.tmac.
 .\" Put any local modifications to doc.tmac here.
 .
@@ -12,8 +14,8 @@
 .  if '\V[GROFF_SGR]'' \
 .    output x X tty: sgr 0
 .
-.  \" Debian: Strictly, "-" is a hyphen while "\-" is a dash, and the former
-.  \" may not always be rendered in the form expected for things like
+.  \" Debian: Strictly, "-" is a hyphen while "\-" is a minus sign, and the
+.  \" former may not always be rendered in the form expected for things like
 .  \" command-line options.  Uncomment this if you want to make sure that
 .  \" manual pages you're writing are clear of this problem.
 .  \" if '\*[.T]'utf8' \

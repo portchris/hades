@@ -26,6 +26,9 @@
   /sys/class/net/ r,
   /sys/devices/**/net/* r,
 
+  # for -j
+  capability net_admin,
+
   # for tracing USB bus, which libpcap supports
   /dev/usbmon* r,
   /dev/bus/usb/ r,

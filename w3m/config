@@ -9,11 +9,11 @@ ssl_ca_path /etc/ssl/certs
 ssl_key_file 
 ssl_cert_file 
 ssl_verify_server 1
-ssl_forbid_method 2
+ssl_forbid_method 2, 3
 no_cache 0
 noproxy_netaddr 0
 no_proxy 
-meta_refresh 1
+meta_refresh 0
 follow_redirection 10
 default_url 1
 retry_http 1
@@ -22,6 +22,8 @@ no_referer 0
 use_lessopen 0
 bgextviewer 1
 editor sensible-editor
+extbrowser sensible-browser
+mailer xdg-open mailto:%s
 mailcap ~/.w3m/mailcap, /etc/w3m/mailcap, /etc/mailcap
 mime_types ~/.w3m/mime.types, /etc/mime.types
 urimethodmap ~/.w3m/urimethodmap, /etc/w3m/urimethodmap

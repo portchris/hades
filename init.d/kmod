@@ -22,6 +22,9 @@ PATH='/sbin:/bin'
 
 case "$1" in
   start)
+  if init_is_upstart; then
+    exit 1
+  fi
   ;;
 
   stop|restart|reload|force-reload)
@@ -48,7 +51,7 @@ load_module() {
 }
 
 modules_files() {
-  local modules_load_dirs='/etc/modules-load.d /run/modules-load.d /lib/modules-load.d'
+  local modules_load_dirs='/etc/modules-load.d /run/modules-load.d /usr/local/lib/modules-load.d /usr/lib/modules-load.d /lib/modules-load.d'
   local processed=' '
   local add_etc_modules=true
 

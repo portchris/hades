@@ -37,7 +37,6 @@ staff:x:50:
 games:x:60:
 users:x:100:
 nogroup:x:65534:
-libuuid:x:101:
 netdev:x:102:
 crontab:x:103:
 syslog:x:104:
@@ -50,3 +49,10 @@ admin:x:110:
 portchris:x:1000:
 ssl-cert:x:111:
 mysql:x:112:
+systemd-journal:x:113:
+systemd-timesync:x:114:
+systemd-network:x:115:
+systemd-resolve:x:116:
+systemd-bus-proxy:x:117:
+uuidd:x:101:
+input:x:118:

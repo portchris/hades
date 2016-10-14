@@ -38,7 +38,7 @@ test -z "$PPP_IPPARAM" && exit 0
 PROVIDER=`echo "$PPP_IPPARAM" | cut -d' ' -f1`
 
 ETC="/etc"
-RUNDIR="/var/cache/pppconfig"
+RUNDIR="/var/run/pppconfig"
 RESOLVCONF="$ETC/resolv.conf"
 PPPRESOLV="$ETC/ppp/resolv"
 TEMPLATE="$RUNDIR/0dns.tempXXXXXXXX"
