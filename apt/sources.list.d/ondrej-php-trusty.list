@@ -1,2 +1,2 @@
-deb http://ppa.launchpad.net/ondrej/php/ubuntu trusty main
+# deb http://ppa.launchpad.net/ondrej/php/ubuntu xenial main # disabled on upgrade to xenial
 # deb-src http://ppa.launchpad.net/ondrej/php/ubuntu trusty main

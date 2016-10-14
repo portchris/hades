@@ -1,0 +1,5 @@
+deb http://archive.ubuntu.com/ubuntu trusty main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu trusty-updates main restricted universe multiverse
+deb http://mirror.jmu.edu/pub/mariadb/repo/10.1/ubuntu trusty main
+# deb-src http://mirror.jmu.edu/pub/mariadb/repo/10.1/ubuntu trusty main
+deb http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse
