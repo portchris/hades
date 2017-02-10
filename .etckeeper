@@ -272,6 +272,7 @@ maybe chgrp 'portchris' 'apache2/sites-available/bidbetter.hades.portchris.net.c
 maybe chmod 0644 'apache2/sites-available/bidbetter.hades.portchris.net.conf'
 maybe chmod 0666 'apache2/sites-available/default-ssl.conf'
 maybe chmod 0666 'apache2/sites-available/happy-birthday.hades.portchris.net.conf'
+maybe chmod 0644 'apache2/sites-available/naturalremedy.company.conf'
 maybe chmod 0644 'apache2/sites-available/portchris.hades.portchris.net.conf'
 maybe chmod 0777 'apache2/sites-enabled'
 maybe chmod 0755 'apm'
