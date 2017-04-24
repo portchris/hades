@@ -25,4 +25,3 @@ UTC=yes
 
 # automatically repair filesystems with inconsistencies during boot
 #FSCKFIX=no
-HWCLOCKACCESS=no

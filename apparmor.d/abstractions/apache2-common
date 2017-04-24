@@ -4,13 +4,6 @@
 
   #include <abstractions/nameservice>
 
-  # Allow unconfined processes to send us signals by default
-  signal (receive) peer=unconfined,
-  # Allow apache to send us signals by default
-  signal (receive) peer=/usr/sbin/apache2,
-  # Allow us to signal ourselves
-  signal peer=@{profile_name},
-
   # Apache
   network inet stream,
   network inet6 stream,
@@ -18,7 +11,7 @@
   /usr/share/apache2/** r,
 
   # changehat itself
-  @{PROC}/@{pid}/attr/current                        rw,
+  @{PROC}/@{pid}/attr/current                        w,
 
   # htaccess files - for what ever it is worth
   /**/.htaccess            r,

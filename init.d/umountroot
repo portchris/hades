@@ -58,7 +58,7 @@ do_stop () {
 }
 
 case "$1" in
-  start|status)
+  start)
 	# No-op
 	;;
   restart|reload|force-reload)

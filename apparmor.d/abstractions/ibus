@@ -13,7 +13,3 @@
   owner @{HOME}/.config/ibus/ r,
   owner @{HOME}/.config/ibus/bus/ rw,
   owner @{HOME}/.config/ibus/bus/* rw,
-
-  unix (connect, receive, send)
-       type=stream
-       peer=(addr="@/tmp/ibus/dbus-*"),

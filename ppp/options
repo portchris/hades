@@ -32,7 +32,12 @@ asyncmap 0
 # Please do not disable this setting. It is expected to be standard in
 # future releases of pppd. Use the call option (see manpage) to disable
 # authentication for specific peers.
-auth
+#auth
+noauth
+# ... Unfortunately, fixing this properly in the peers file
+# (/etc/ppp/peers/ppp0, typically) is apparently incompatible with the
+# paradigm used by gnome-system-tools and system-tools-backend for
+# managing the peers files.  So in Ubuntu Feisty we change the default.
 
 # Use hardware flow control (i.e. RTS/CTS) to control the flow of data
 # on the serial port.

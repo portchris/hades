@@ -17,6 +17,9 @@ if [ "$PS1" ]; then
   fi
 fi
 
+# The default umask is now handled by pam_umask.
+# See pam_umask(8) and /etc/login.defs.
+
 if [ -d /etc/profile.d ]; then
   for i in /etc/profile.d/*.sh; do
     if [ -r $i ]; then

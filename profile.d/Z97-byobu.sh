@@ -1,7 +1,8 @@
+#!/bin/sh
 #    Z97-byobu.sh - allow any user to opt into auto-launching byobu
 #    Copyright (C) 2011 Canonical Ltd.
 #
-#    Authors: Dustin Kirkland <kirkland@byobu.org>
+#    Authors: Dustin Kirkland <kirkland@byobu.co>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -19,23 +20,16 @@
 # Apologies for borrowing the LC_BYOBU namespace, but:
 #  a) it's reasonable to assume that no one else is using LC_BYOBU
 #  b) LC_* is sent and receieved by most /etc/ssh/ssh*_config
-
-if [ -r "/usr/bin/byobu-launch" ]; then
-	if [ "$LC_BYOBU" = "0" ]; then
-		true
-	elif [ "$LC_BYOBU" = "1" ]; then
-		. /usr/bin/byobu-launch
-	elif [ -e "/etc/byobu/autolaunch" ]; then
-		. /usr/bin/byobu-launch
-	elif [ "$LC_TERMTYPE" = "byobu" ]; then
-		. /usr/bin/byobu-launch
-	elif [ "$LC_TERMTYPE" = "byobu-screen" ]; then
-		export BYOBU_BACKEND="screen"
-		. /usr/bin/byobu-launch
-	elif [ "$LC_TERMTYPE" = "byobu-tmux" ]; then
-		export BYOBU_BACKEND="tmux"
-		. /usr/bin/byobu-launch
-	fi
+if [ -n "$LC_BYOBU" ] && [ "$LC_BYOBU" -gt 0 ] && [ -r "/usr/bin/byobu-launch" ]; then
+	. /usr/bin/byobu-launch
+elif [ "$LC_TERMTYPE" = "byobu" ] && [ -r "/usr/bin/byobu-launch" ]; then
+	. /usr/bin/byobu-launch
+elif [ "$LC_TERMTYPE" = "byobu-screen" ] && [ -r "/usr/bin/byobu-launch" ]; then
+	export BYOBU_BACKEND="screen"
+	. /usr/bin/byobu-launch
+elif [ "$LC_TERMTYPE" = "byobu-tmux" ] && [ -r "/usr/bin/byobu-launch" ]; then
+	export BYOBU_BACKEND="tmux"
+	. /usr/bin/byobu-launch
 fi
 
 # vi: syntax=sh ts=4 noexpandtab

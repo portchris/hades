@@ -37,9 +37,6 @@ umask 077
 # so break my scripts.
 export HOME=/etc/mysql/
 
-# Source default config file.
-[ -r /etc/default/mariadb ] && . /etc/default/mariadb
-
 ## Fetch a particular option from mysql's invocation.
 #
 # Usage: void mysqld_get_param option
@@ -80,7 +77,7 @@ mysqld_status () {
     ps_alive=0
     pidfile=`mysqld_get_param pid-file`
     if [ -f "$pidfile" ] && ps `cat $pidfile` >/dev/null 2>&1; then ps_alive=1; fi
-    
+
     if [ "$1" = "check_alive"  -a  $ping_alive = 1 ] ||
        [ "$1" = "check_dead"   -a  $ping_alive = 0  -a  $ps_alive = 0 ]; then
 	return 0 # EXIT_SUCCESS
@@ -108,11 +105,11 @@ case "${1:-''}" in
 	    # Could be removed during boot
 	    test -e /var/run/mysqld || install -m 755 -o mysql -g root -d /var/run/mysqld
 
-	    # Start MariaDB! 
-  	    /usr/bin/mysqld_safe "${@:2}" > /dev/null 2>&1 &
+	    # Start MariaDB!
+	    /usr/bin/mysqld_safe "${@:2}" 2>&1 >/dev/null | $ERR_LOGGER &
 
-	    # 6s was reported in #352070 to be too little
-	    for i in $(seq 1 "${MYSQLD_STARTUP_TIMEOUT:-60}"); do
+	    # 6s was reported in #352070 to be too few when using ndbcluster
+	    for i in $(seq 1 "${MYSQLD_STARTUP_TIMEOUT:-30}"); do
                 sleep 1
 	        if mysqld_status check_alive nowarn ; then break; fi
 		log_progress_msg "."
@@ -131,7 +128,7 @@ case "${1:-''}" in
 
   'stop')
 	# * As a passwordless mysqladmin (e.g. via ~/.my.cnf) must be possible
-	# at least for cron, we can rely on it here, too. (although we have 
+	# at least for cron, we can rely on it here, too. (although we have
 	# to specify it explicit as e.g. sudo environments points to the normal
 	# users home and not /root)
 	log_daemon_msg "Stopping MariaDB database server" "mysqld"
@@ -155,7 +152,7 @@ case "${1:-''}" in
 
         if ! mysqld_status check_dead warn; then
 	  log_end_msg 1
-	  log_failure_msg "Please stop MariaDB manually and read /usr/share/doc/mariadb-server-10.1/README.Debian.gz!"
+	  log_failure_msg "Please stop MariaDB manually and read /usr/share/doc/mariadb-server-5.5/README.Debian.gz!"
 	  exit -1
 	else
 	  log_end_msg 0
@@ -164,7 +161,8 @@ case "${1:-''}" in
 
   'restart')
 	set +e; $SELF stop; set -e
-	$SELF start 
+  shift
+	$SELF start "${@}"
 	;;
 
   'reload'|'force-reload')
@@ -182,16 +180,8 @@ case "${1:-''}" in
 	fi
   	;;
 
-  'bootstrap')
-	# Bootstrap the cluster, start the first node
-	# that initiates the cluster
-	log_daemon_msg "Bootstrapping the cluster" "mysqld"
-	$SELF start "${@:2}" --wsrep-new-cluster
-	;;
-
   *)
-	echo "Usage: $SELF start|stop|restart|reload|force-reload|status|bootstrap"
+	echo "Usage: $SELF start|stop|restart|reload|force-reload|status"
 	exit 1
 	;;
 esac
-

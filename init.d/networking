@@ -71,7 +71,7 @@ check_network_file_systems() {
 
     while read DEV MTPT FSTYPE REST; do
 	case $DEV in
-	/dev/nbd*|/dev/nd[a-z]*|/dev/etherd/e*|curlftpfs*)
+	/dev/nbd*|/dev/nd[a-z]*|/dev/etherd/e*)
 	    log_warning_msg "not deconfiguring network interfaces: network devices still mounted."
 	    exit 0
 	    ;;
@@ -105,14 +105,9 @@ ifup_hotplug () {
 			    do
 				    link=${iface##:*}
 				    link=${link##.*}
-				    if [ -e "/sys/class/net/$link" ]
+				    if [ -e "/sys/class/net/$link" ] && [ "$(cat /sys/class/net/$link/operstate)" = up ]
 				    then
-					# link detection does not work unless we up the link
-					ip link set "$iface" up || true
-					if [ "$(cat /sys/class/net/$link/operstate)" = up ]
-					then
 					    echo "$iface"
-					fi
 				    fi
 			    done)
 	    if [ -n "$ifaces" ]
@@ -138,11 +133,6 @@ start)
 	set -f
 	exclusions=$(process_exclusions)
 	log_action_begin_msg "Configuring network interfaces"
-	if [ -x /sbin/udevadm ]; then
-		if [ -n "$(ifquery --list --exclude=lo)" ] || [ -n "$(ifquery --list --allow=hotplug)" ]; then
-			udevadm settle || true
-		fi
-	fi
 	if ifup -a $exclusions $verbose && ifup_hotplug $exclusions $verbose
 	then
 	    log_action_end_msg $?

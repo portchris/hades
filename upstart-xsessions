@@ -2,8 +2,7 @@
 gnome
 gnome-classic
 gnome-fallback
-gnome-flashback-metacity
-gnome-flashback-compiz
+gnome-fallback-compiz
 kde-plasma
 Lubuntu
 Lubuntu-Netbook
@@ -14,5 +13,3 @@ ubuntu
 ubuntustudio
 xfce
 xubuntu
-unity8-x11
-unity8-mir

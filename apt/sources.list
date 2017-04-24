@@ -1,5 +1,4 @@
-deb http://archive.ubuntu.com/ubuntu xenial main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu xenial-updates main restricted universe multiverse
-# deb http://mirror.jmu.edu/pub/mariadb/repo/10.1/ubuntu xenial main # disabled on upgrade to xenial
-# deb-src http://mirror.jmu.edu/pub/mariadb/repo/10.1/ubuntu trusty main
-deb http://security.ubuntu.com/ubuntu xenial-security main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu trusty main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu trusty-updates main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu trusty-backports main restricted universe multiverse
+deb http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse

@@ -49,6 +49,12 @@ do_stop () {
 		  /|/proc|/dev|/dev/pts|/dev/shm|/proc/*|/sys|/run|/run/*)
 			continue
 			;;
+		  /var/run)
+			continue
+			;;
+		  /var/lock)
+			continue
+			;;
 		esac
 		case "$FSTYPE" in
 		  nfs|nfs4|smbfs|ncp|ncpfs|cifs|coda|ocfs2|gfs|ceph)
@@ -81,7 +87,7 @@ do_stop () {
 }
 
 case "$1" in
-  start|status)
+  start)
 	# No-op
 	;;
   restart|reload|force-reload)

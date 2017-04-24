@@ -18,9 +18,6 @@
   capability sys_nice,
   capability syslog,
 
-  unix (receive) type=dgram,
-  unix (receive) type=stream,
-
   # rsyslog configuration
   /etc/rsyslog.conf r,
   /etc/rsyslog.d/ r,
@@ -36,10 +33,8 @@
   @{PROC}/kmsg                  r,
 
   /dev/log                      rwl,
-  /{,var/}run/utmp              rk,
-  /var/lib/*/dev/log            rwl,
-  /var/spool/postfix/dev/log    rwl,
-  /{,var/}run/systemd/notify    w,
+  /var/lib/*/dev/log            wl,
+  /var/spool/postfix/dev/log    wl,
 
   # 'r' is needed when using imfile
   /var/log/**                   rw,

@@ -1,12 +1,9 @@
 #!/bin/sh
-set -e
 
 # don't run if this package is removed but not purged
 if [ ! -f /usr/sbin/popularity-contest ]; then
 	exit 0
 fi
-
-MODE="$1"
 
 unset MAILFROM
 unset MAILTO
@@ -20,39 +17,26 @@ unset MTAOPS
 . /usr/share/popularity-contest/default.conf
 . /etc/popularity-contest.conf
 
-if test -d /etc/popularity-contest.d/; then
-  for file in `run-parts --list --regex '\.conf$' /etc/popularity-contest.d/`;
-  do
-   . $file
-  done
-fi
-
 # don't run if MAILTO address is blank, and not configured to use HTTP POST!
 if [ -z "$MAILTO" ] && [ "yes" != "$USEHTTP" ]; then exit 0; fi
 
 # don't run if PARTICIPATE is "no" or unset!
-if [ "$PARTICIPATE" = "no" ] || [ -z "$PARTICIPATE" ]; then exit 0; fi
+[ "$PARTICIPATE" = "no" ] || [ -z "$PARTICIPATE" ] && exit 0
 
 if [ -n "$HTTP_PROXY" ]; then
   export http_proxy="$HTTP_PROXY";
 fi
 
-POPCONOLD=/var/log/popularity-contest
-POPCON=/var/log/popularity-contest.new
+POPCON=/var/log/popularity-contest
 
 # Only run on the given day, to spread the load on the server a bit
 if [ "$DAY" ] && [ "$DAY" != "$(date +%w)" ] ; then
 	# Ensure that popcon runs at least once in the last week
-	if [ -f "$POPCONOLD" ] ; then
+	if [ -f "$POPCON" ] ; then
 		now=$(date +%s)
-		lastrun=$(date -r $POPCONOLD +%s)
-                if [ "$MODE" = "--crond" ]; then
-			# 6.5 days, in seconds
-			week=561600
-	        else
-			# 7.5 days, in seconds
-			week=648000
-                fi
+		lastrun=$(date -r $POPCON +%s)
+		# 6.5 days, in seconds
+		week=561600
 		if [ "$(( $now - $lastrun ))" -le "$week" ]; then
 			exit 0
 		fi
@@ -66,7 +50,7 @@ savelog -c 7 popularity-contest >/dev/null
 
 run_popcon()
 {
-	runuser -s /bin/sh -c "/usr/sbin/popularity-contest" nobody
+	su -s /bin/sh -c "/usr/sbin/popularity-contest" nobody
 }
 
 do_sendmail()
@@ -81,25 +65,6 @@ do_sendmail()
 # generate the popularity contest data
 
 run_popcon > $POPCON
-
-GPG=/usr/bin/gpg
-
-if [ "$ENCRYPT" = "yes" ] && ! [ -x "$GPG" ]; then
-  logger -t popularity-contest "encrytion required but gpg is not available."
-  echo "popularity-contest: encrytion required but gpg is not available." 2>&1
-  exit 1
-fi
-
-if [ -x "$GPG" ] && [ "$ENCRYPT" = "maybe" ] || [ "$ENCRYPT" = "yes" ]; then
-  POPCONGPG="$POPCON.gpg"
-  rm -f "$POPCONGPG"
-  GPGHOME=`mktemp -d`
-  $GPG --batch --no-options --no-default-keyring --trust-model=always \
-       --homedir "$GPGHOME" --keyring $KEYRING --quiet \
-       --armor -o "$POPCONGPG" -r $POPCONKEY --encrypt "$POPCON"
-  rm -rf "$GPGHOME"
-  POPCON="$POPCONGPG"
-fi
 
 SUBMITTED=no
 
@@ -117,11 +82,11 @@ fi
 
 # try to email the popularity contest data
 
-if [ "$MODE" = "--crond" ] && [ yes != "$SUBMITTED" ] && [ "$MAILTO" ]; then
+if [ yes != "$SUBMITTED" ] && [ -n "$MAILTO" ]; then
     if [ -x "`which sendmail 2>/dev/null`" ]; then
 	(
 	    if [ -n "$MAILFROM" ]; then
-	       	echo "From: <$MAILFROM>"
+	        	echo "From: <$MAILFROM>"
 	    	echo "Sender: <$MAILFROM>"
 	    fi
 	    echo "To: $MAILTO"
@@ -139,6 +104,4 @@ fi
 
 if [ "yes" != "$SUBMITTED" ] ; then
 	logger -t popularity-contest "unable to submit report."
-else
-	mv $POPCON $POPCONOLD
 fi

@@ -44,7 +44,7 @@ PMS="$PMS guidance-power-manager.py dalston-power-applet"
 PMS="$PMS mate-settings-daemon"
 PMS="$PMS unity-settings-daemon"
 
-if pidof -x $PMS > /dev/null; then
+if pidof x $PMS > /dev/null; then
         exit
 elif test "$XUSER" != "" && pidof dcopserver > /dev/null && test -x /usr/bin/dcop && /usr/bin/dcop --user $XUSER kded kded loadedModules | grep -q klaptopdaemon; then
         exit

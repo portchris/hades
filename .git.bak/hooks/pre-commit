@@ -1,0 +1,4 @@
+#!/bin/sh
+# pre-commit hook for etckeeper, to store metadata and do sanity checks
+set -e
+etckeeper pre-commit -d /etc
